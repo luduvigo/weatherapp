@@ -18,20 +18,28 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view
  */
 public class ForecastFragment extends Fragment {
+
+    private ArrayAdapter<String> mForecastAdapter;
 
     public ForecastFragment(){
     }
@@ -79,7 +87,7 @@ public class ForecastFragment extends Fragment {
 
         //The ArrayAdapter will take from a source and
         //use it to populate a ListView it's attached to.
-        ArrayAdapter<String> arrayAdapter =
+        mForecastAdapter =
                 new ArrayAdapter<String>(
                         //The current context (this fragment parent activity)
                         getActivity(),
@@ -91,16 +99,75 @@ public class ForecastFragment extends Fragment {
                         weekForecast);
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
-        listView.setAdapter(arrayAdapter);
+        listView.setAdapter(mForecastAdapter);
 
         return rootView;
     }
 
-    public class FetchWeatherTask extends AsyncTask<String, Void, Void>{
+    public class FetchWeatherTask extends AsyncTask<String, Void, String[]>{
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
-        protected Void doInBackground(String... params){
+        private String getReadableDateString(long time){
+            Date date = new Date(time * 1000);
+            SimpleDateFormat format = new SimpleDateFormat("E, MMM d");
+            return format.format(date).toString();
+        }
+
+        private String formatHighLows(double high, double low){
+            long roundedHigh = Math.round(high);
+            long roundedLow = Math.round(low);
+            String highLowString = roundedHigh + "/" + roundedLow;
+            return  highLowString;
+        }
+
+        private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays)
+                throws JSONException{
+
+            final String OWM_LIST = "list";
+            final String OWM_WEATHER = "weather";
+            final String OWM_TEMPERATURE = "temp";
+            final String OWM_MAX = "max";
+            final String OWM_MIN = "min";
+            final String OWM_DATETIME = "dt";
+            final String OWM_DESCRIPTION = "main";
+
+            JSONObject forecastJson = new JSONObject(forecastJsonStr);
+            JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
+
+            String[] resultStrs = new String[numDays];
+            for(int i = 0; i < weatherArray.length(); i++){
+                String day;
+                String description;
+                String highAndLow;
+
+                //get the json object representing the day
+                JSONObject dayForecast = weatherArray.getJSONObject(i);
+
+                long dateTime = dayForecast.getLong(OWM_DATETIME);
+                day = getReadableDateString(dateTime);
+
+                JSONObject weatherObject = dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
+                description = weatherObject.getString(OWM_DESCRIPTION);
+
+                JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
+                double high = temperatureObject.getDouble(OWM_MAX);
+                double low = temperatureObject.getDouble(OWM_MIN);
+
+                highAndLow = formatHighLows(high, low);
+                resultStrs[i] = day + " - " + description + " - " + highAndLow;
+            }
+
+            for(String s : resultStrs){
+                Log.v(LOG_TAG, "Forecast entry: " + s);
+            }
+            return resultStrs;
+
+
+
+        }
+
+        protected String[] doInBackground(String... params){
 
             //If there is no zip code, there's nothing to look up. Verify size of params
             if(params.length == 0){
@@ -159,7 +226,7 @@ public class ForecastFragment extends Fragment {
                 }
                 forecastJsonStr = buffer.toString();
 
-                System.out.println(forecastJsonStr);
+                Log.v(LOG_TAG, "Forecast string: " + forecastJsonStr);
 
             } catch (IOException e){
                 Log.e("PlaceholderFragment", "Error", e);
@@ -175,7 +242,24 @@ public class ForecastFragment extends Fragment {
                     }
                 }
             }
+            try {
+                return getWeatherDataFromJson(forecastJsonStr, numDays);
+            } catch (JSONException e){
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+            //This will only happen in case of error getting or parsing the forecast
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            if(result != null){
+                mForecastAdapter.clear();
+                for(String dayForecastStr : result){
+                    mForecastAdapter.add(dayForecastStr);
+                }
+            }
         }
     }
 }

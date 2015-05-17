@@ -70,6 +70,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState){
+            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             //Create some dummy data for the ListView. Here's a sample weekly forecast
             String[] data = {
                     "Mon 6/23 - Sunny - 31/17",
@@ -96,7 +97,9 @@ public class MainActivity extends ActionBarActivity {
                         //Forecast data
                         weekForecast);
 
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
+            listView.setAdapter(arrayAdapter);
+
             return rootView;
         }
     }

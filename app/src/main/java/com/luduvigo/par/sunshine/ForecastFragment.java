@@ -15,8 +15,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.content.Context;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +64,7 @@ public class ForecastFragment extends Fragment {
         int id = item.getItemId();
         if(id == R.id.action_refresh){
             FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-            fetchWeatherTask.execute("94043");
+            fetchWeatherTask.execute("Nice,fr");
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -74,13 +77,13 @@ public class ForecastFragment extends Fragment {
 
         //Create some dummy data for the ListView. Here's a sample weekly forecast
         String[] data = {
-                "Mon 6/23 - Paolo - 31/17",
-                "Tue 6/24 - Foggy - 21/8",
-                "Wed 6/25 - Cloudy - 22/17",
-                "Thurs 6/26 - Rainy - 18/11",
-                "Fri 6/27 - Foggy - 21/10",
-                "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
-                "Sun 6/29 - Sunny - 20/7"
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
         };
 
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
@@ -100,6 +103,21 @@ public class ForecastFragment extends Fragment {
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Context context = getActivity();
+
+                String value = (String)parent.getItemAtPosition(position);
+
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context, value, duration);
+                toast.show();
+            }
+        });
 
         return rootView;
     }

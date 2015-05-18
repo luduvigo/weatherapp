@@ -4,6 +4,7 @@ package com.luduvigo.par.sunshine;
  * Created by par on 17/05/15.
  */
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -108,14 +109,11 @@ public class ForecastFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Context context = getActivity();
+                String forecast = mForecastAdapter.getItem(position);
 
-                String value = (String)parent.getItemAtPosition(position);
-
-                int duration = Toast.LENGTH_SHORT;
-
-                Toast toast = Toast.makeText(context, value, duration);
-                toast.show();
+                Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, forecast);
+                startActivity(detailIntent);
             }
         });
 

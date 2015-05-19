@@ -65,33 +65,30 @@ public class ForecastFragment extends Fragment {
         int id = item.getItemId();
 
         if(id == R.id.action_refresh){
-            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String location = preferences.getString(getString(R.string.pref_location_key),
-                    getString(R.string.pref_location_default));
-            fetchWeatherTask.execute(location);
+            updateWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateWeather(){
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = preferences.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        fetchWeatherTask.execute(location);
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        updateWeather();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState){
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        //Create some dummy data for the ListView. Here's a sample weekly forecast
-        String[] data = {
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-        };
-
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
 
         //The ArrayAdapter will take from a source and
         //use it to populate a ListView it's attached to.
@@ -104,7 +101,7 @@ public class ForecastFragment extends Fragment {
                         //Id of the textview to populate
                         R.id.list_item_forecast_textview,
                         //Forecast data
-                        weekForecast);
+                        new ArrayList<String>());
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
@@ -135,6 +132,20 @@ public class ForecastFragment extends Fragment {
         }
 
         private String formatHighLows(double high, double low){
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            //String unitType = preferences.getString(
+            //        getString(R.string.pref_units_metric),
+            //        getString(R.string.pref_units_metric));
+            String unitType = "";
+
+            if(unitType.equals(getString(R.string.pref_units_imperial))){
+                high = high * 1.8 + 32;
+                low = low * 1.8 + 32;
+            } else if(!unitType.equals(getString(R.string.pref_units_metric))){
+                Log.d(LOG_TAG, "Unit type not found: " + unitType);
+            }
+
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
             String highLowString = roundedHigh + "/" + roundedLow;

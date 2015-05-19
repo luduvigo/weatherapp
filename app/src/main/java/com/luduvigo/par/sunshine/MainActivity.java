@@ -1,7 +1,9 @@
 package com.luduvigo.par.sunshine;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -34,10 +36,15 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if(id == R.id.action_settings){
+            Log.v("PAZ", "PAZ SETTINGS");
+
+
+            Intent settingIntent = new Intent(getApplicationContext(), SettingsActivity.class);
+            startActivity(settingIntent);
+
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

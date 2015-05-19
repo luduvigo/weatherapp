@@ -19,8 +19,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.content.Context;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,6 +61,7 @@ public class ForecastFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
+
         if(id == R.id.action_refresh){
             FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
             fetchWeatherTask.execute("Nice,fr");

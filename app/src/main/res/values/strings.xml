@@ -5,8 +5,9 @@
     <string name="action_settings">Settings</string>
     <string name="action_refresh" translatable="false">Refresh</string>
     <string name="title_activity_detail">DetailActivity</string>
-    <string name="title_activity_settings">PAZ SETTINGS</string>
+    <string name="title_activity_settings">SettingsActivity</string>
 
-    <string name="hello_world">Hello world!</string>
-
+    <string name="pref_location_key">Location</string>
+    <string name="pref_location_label" translatsble="false">location</string>
+    <string name="pref_location_default" translatable="false">Nice,fr</string>
 </resources>

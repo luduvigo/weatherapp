@@ -37,12 +37,7 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if(id == R.id.action_settings){
-            Log.v("PAZ", "PAZ SETTINGS");
-
-
-            Intent settingIntent = new Intent(getApplicationContext(), SettingsActivity.class);
-            startActivity(settingIntent);
-
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

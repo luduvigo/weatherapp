@@ -131,13 +131,7 @@ public class ForecastFragment extends Fragment {
             return format.format(date).toString();
         }
 
-        private String formatHighLows(double high, double low){
-
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            //String unitType = preferences.getString(
-            //        getString(R.string.pref_units_metric),
-            //        getString(R.string.pref_units_metric));
-            String unitType = "";
+        private String formatHighLows(double high, double low, String unitType){
 
             if(unitType.equals(getString(R.string.pref_units_imperial))){
                 high = high * 1.8 + 32;
@@ -167,6 +161,12 @@ public class ForecastFragment extends Fragment {
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
 
             String[] resultStrs = new String[numDays];
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String unitType = preferences.getString(
+                    getString(R.string.pref_units_key),
+                    getString(R.string.pref_units_metric));
+
             for(int i = 0; i < weatherArray.length(); i++){
                 String day;
                 String description;
@@ -185,7 +185,7 @@ public class ForecastFragment extends Fragment {
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
-                highAndLow = formatHighLows(high, low);
+                highAndLow = formatHighLows(high, low, unitType);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 

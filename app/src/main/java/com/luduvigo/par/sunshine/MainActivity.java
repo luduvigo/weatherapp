@@ -17,6 +17,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState){
+        Log.v("PAZ", "CREATE");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if(savedInstanceState == null){
@@ -24,6 +25,36 @@ public class MainActivity extends ActionBarActivity {
                     .add(R.id.container, new ForecastFragment())
                     .commit();
         }
+    }
+
+    @Override
+    public void onPause(){
+        Log.v("PAZ", "PAUSE");
+        super.onPause();
+    }
+
+    @Override
+    public void onStop(){
+        Log.v("PAZ", "STOP");
+        super.onStop();
+    }
+
+    @Override
+    public void onResume(){
+        Log.v("PAZ", "RESUME");
+        super.onResume();
+    }
+
+    @Override
+    public void onStart(){
+        Log.v("PAZ", "START");
+        super.onStart();
+    }
+
+    @Override
+    public void onDestroy(){
+        Log.v("PAZ", "DESTROY");
+        super.onDestroy();
     }
 
     @Override
